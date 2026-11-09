@@ -1,0 +1,13 @@
+name: hermes-time-awareness
+version: "1.1.0"
+description: >
+  Gives the model a sense of time without timestamping every message. The clock
+  dimension runs every turn and costs only the system clock; the elapsed
+  dimension reads the last persisted assistant message from state.db (read-only,
+  index-keyed by session, cached) and appears only when the gap crosses a
+  threshold or the calendar day changes. Cross-session gaps use a dedicated
+  one-row-per-session table instead of scanning the message table. Injected into
+  the user turn, never the system prompt, so the prompt cache stays byte-stable.
+  Writes no message content.
+provides_hooks:
+  - pre_llm_call

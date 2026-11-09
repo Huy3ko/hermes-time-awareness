@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# Plugin runtime state — never commit another instance's data
+debug.log
+time-awareness.db
+*.db
+*.db-wal
+*.db-shm
+
+# Editors / OS
+.DS_Store
+.idea/
+.vscode/
