@@ -1,5 +1,5 @@
 name: hermes-time-awareness
-version: "2.0.0"
+version: "2.0.1"
 description: >
   A sense of time for Hermes agents, without timestamping every message. Three
   dimensions in one injected block: the clock (system only, every turn), the gap

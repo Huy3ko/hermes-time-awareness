@@ -44,15 +44,36 @@ latter.
 
 ## Install
 
+**Current version: 2.0.1**
+
 ```bash
 cd ~/.hermes/plugins
 git clone https://github.com/Huy3ko/hermes-time-awareness.git
 hermes plugins enable hermes-time-awareness
 ```
 
-No restart needed for the hook; a fresh gateway picks it up on the next turn.
+No restart needed — the gateway reloads the hook immediately and the next turn
+carries the block.
 
 Requirements: Hermes Agent with plugin support, Python 3.11+ (standard library only).
+
+### Uninstall
+
+```bash
+hermes plugins disable hermes-time-awareness
+rm -rf ~/.hermes/plugins/hermes-time-awareness
+rm -f ~/.hermes/time-awareness.db
+```
+
+The database holds one row per conversation (`session_id`, `last_seen`) and no
+message content. Deleting it loses only the cross-session history; the next turn
+rebuilds it from `state.db` for the current session.
+
+### Install without git
+
+Download the release archive, unpack into `~/.hermes/plugins/hermes-time-awareness`,
+then `hermes plugins enable hermes-time-awareness`. Verify against the SHA-256 in
+the release notes before unpacking.
 
 ---
 
@@ -222,3 +243,9 @@ It shares the design, not the code.
 ## Licence
 
 MIT — see [LICENSE](LICENSE).
+
+**Provenance.** The design follows time-gap, which carries no licence file. This
+repository is an independent implementation — different module layout, different
+function boundaries, and a test suite written from the behaviour. It shares the
+design, not the code. Every function and every test here was written for this
+project; see `CHANGELOG.md` §2.0.0 for the replacement that made that true.
