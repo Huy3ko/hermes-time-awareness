@@ -154,6 +154,19 @@ def test_activity_line_appears_for_long_session(env):
     assert "turns" in out
 
 
+def test_active_time_is_marked_as_estimate(env):
+    """Die aktive Zeit ist aus Nachrichtenabständen geschätzt, nicht gemessen."""
+    base = time.time() - 3 * HOUR
+    add(env.db_file, "est", "user", base)
+    add(env.db_file, "est", "user", base + 120)          # 2 min Arbeit
+    add(env.db_file, "est", "user", base + 2 * HOUR)     # lange Pause, Spanne 2 h
+
+    out = block_of(env.on_turn(session_id="est", platform="telegram"))
+    assert "Session:" in out
+    assert "~" in out.split("Session:")[1].split("active")[0], \
+        "die aktive Zeit muss als Schätzung erkennbar sein"
+
+
 def test_activity_line_absent_for_short_session(env):
     add(env.db_file, "short", "user", time.time() - 300)
     assert not has_activity(env.on_turn(session_id="short", platform="telegram"))

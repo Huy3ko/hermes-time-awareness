@@ -11,7 +11,7 @@ Three dimensions, one injected block, and silence the rest of the time:
 ```text
 [Temporal context]
 Now: 2026-11-09 20:58:43 · Europe/Berlin · Monday · evening
-Session: 5 hours so far · 3 hours active · 55 turns
+Session: 5 hours so far · ~3 hours active · 55 turns
 [/Temporal context]
 ```
 
@@ -29,7 +29,12 @@ This plugin measures both and never conflates them:
 | | meaning |
 |---|---|
 | **so far** | first user message → last user message |
-| **active** | sum of the gaps between consecutive user messages, **excluding any gap longer than `idle_break_seconds`** (default 10 minutes) |
+| **~active** | sum of the gaps between consecutive user messages, **excluding any gap longer than `idle_break_seconds`** (default 10 minutes) |
+
+The tilde is not decoration. Active time is **estimated from message spacing**,
+not measured. An agent that researches for fifteen minutes without producing a
+message shows that quarter hour as a pause. Read it as a lower bound, not as a
+timesheet.
 
 A conversation that runs 09:00–18:00 with two hours of breaks reports
 **9 hours so far · 7 hours active**. An agent must never claim the former as the
@@ -103,6 +108,11 @@ the turn arrives without a time hint. It looks like everything works.
 
 Three fixes:
 
+The `LIMIT` applies **only to the gap lookup**. Session start, turn count and
+active time come from their own aggregate query without a limit
+(`MIN(timestamp), MAX(timestamp), COUNT(*)`), so a long conversation is measured
+in full even when the lookback for the last exchange is bounded.
+
 **1. Key the query by session.**
 
 ```sql
@@ -172,7 +182,7 @@ reply — a deliberate simplification, marked as `other conversation` in the blo
 
 ```bash
 python -m pytest tests -q
-# 50 passed
+# 51 passed
 ```
 
 Grouped by what they protect:

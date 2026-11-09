@@ -5,7 +5,7 @@ One hook, one injected block, four questions from three sources:
     what time is it?                  system clock                    ~13 µs
     how long since we spoke?          state.db, keyed by session      ~16 ms, cached
     when did we last speak at all?    session table                   ~0.05 ms
-    how long has this session run?    state.db, cached
+    how long has this session run?    state.db, cached (active time is estimated)
 
 The block stays silent about everything it does not need to say. A continuous
 conversation gets one line. A gap gets two. A long session gets three.
@@ -488,9 +488,12 @@ def render(now_ts: float, previous: Optional[float], show_gap: bool,
         first, last, turns = activity
         elapsed = last - first
         if elapsed >= HOUR:
+            # "~" ist kein Schmuck: die aktive Zeit ist aus Nachrichtenabständen
+            # geschätzt. Arbeit ohne Nachricht (Recherche, lange Tool-Läufe)
+            # erscheint als Pause.
             lines.append(
                 f"Session: {describe_duration(elapsed)} so far · "
-                f"{describe_duration(worked)} active · {turns} turns"
+                f"~{describe_duration(worked)} active · {turns} turns"
             )
 
     lines.append("[/Temporal context]")
